@@ -44,6 +44,11 @@ This is the global *default* event dispatcher. If you use the [bind](#bind-funct
 or [trigger](#trigger-function) functions without specifying the `:dispatch`
 keyword, `*dispatch*` is used.
 
+It is created on load via `defvar` meaning that subsequent loads will preserve
+the object. It is exported so that in the event you want to extend the [dispatch class](#dispatch-class),
+you can create your own dispatch object and set it into `event-glue:*dispatch*`
+and everything will use your extended class by default.
+
 ### make-dispatch (function)
 ```lisp
 (defun make-dispatch ())
