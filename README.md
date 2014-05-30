@@ -11,6 +11,7 @@ anywhere you need a generic event handling system.
 ## API/docs
 
 - [dispatch (class)](#dispatch-class)
+- [\*dispatch\* (object)](#dispatch-object-of-type-dispatch)
 - [make-dispatch (function)](#make-dispatch-function)
 - [forward (function)](#forward-function)
 - [clear-forward (function)](#clear-forward-function)
@@ -38,7 +39,7 @@ to add things like a synchronized queue.
 Note that dispatchers can feed events into each other, either by passing all
 events or using a function to filter them (see [forward](#forward-function)).
 
-### *dispatch* (object of type dispatch)
+### \*dispatch\* (object of type dispatch)
 This is the global *default* event dispatcher. If you use the [bind](#bind-function)
 or [trigger](#trigger-function) functions without specifying the `:dispatch`
 keyword, `*dispatch*` is used.
