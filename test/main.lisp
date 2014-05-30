@@ -59,6 +59,17 @@
     (is (= 0 (length (gethash "click" (dispatch-handlers dispatch)))))
     (is (= 1 (length (gethash "close" (dispatch-handlers dispatch)))))))
 
+(test binding-once
+  "Test our lovely bind-once function."
+  (let ((dispatch (make-dispatch))
+        (clicks 0))
+    (bind-once "click" (lambda (ev) (incf clicks (data ev))))
+    (trigger (make-event "click" :data 3))
+    (trigger (make-event "click" :data 3))
+    (trigger (make-event "click" :data 3))
+    (trigger (make-event "click" :data 3))
+    (is (= 3 clicks))))
+
 (test trigger
   "Tests triggering of events (and lack thereof after unbinding)"
   (let* ((dispatch (make-dispatch))

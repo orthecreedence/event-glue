@@ -11,6 +11,7 @@
            #:meta
            #:make-event
            #:bind
+           #:bind-once
            #:unbind
            #:unbind-all
            #:wipe

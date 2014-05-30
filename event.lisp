@@ -43,9 +43,11 @@
   "Easy wrapper for creating a standard event object. Meta is a plist of
    optional data to set (top-level) into the event object."
   (let ((event (make-instance type :ev name :data data)))
-    (when meta
-      (loop for (k v) on meta by #'cddr do
-        (setf (gethash (string-downcase (string k)) (meta event)) v)))
+    (cond ((typep meta 'hash-table)
+           (setf (meta event) meta))
+          ((consp meta)
+           (loop for (k v) on meta by #'cddr do
+             (setf (gethash (string-downcase (string k)) (meta event)) v))))
     event))
 
 (defun make-lookup-name (event-name name)
@@ -66,6 +68,18 @@
     (when name
       (setf (gethash (make-lookup-name event-name name) (dispatch-handler-names dispatch)) function))
     function))
+
+(defun bind-once (event-name function &key name (dispatch *dispatch*))
+  "Bind a function to an event, but clear the binding out once the event has
+   been triggered once."
+  (let ((wrapped-function nil))
+    ;; use setf here so we can access wrapped-function from within itself.
+    (setf wrapped-function 
+          (lambda (event)
+            (unbind event-name wrapped-function :dispatch *dispatch*)
+            (funcall function event)))
+    ;; now just clal bind as normal
+    (bind event-name wrapped-function :name name :dispatch dispatch)))
 
 (defun unbind (event-name function-or-name &key (dispatch *dispatch*))
   "Unbind an event/function pair. If function-or-name contains a non-function
