@@ -243,6 +243,10 @@ Examples:
 (trigger (make-event "click" :data 'red-button))
 ```
 
+## Tests
+
+Load up the `event-glue-test` system and run `(event-glue-test:run-tests)`.
+
 ## License
 
 MIT.
