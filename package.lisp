@@ -4,6 +4,7 @@
            #:*dispatch*
            #:make-dispatch
            #:forward
+           #:forwardsp
            #:clear-forward
            #:event
            #:ev

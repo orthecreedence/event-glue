@@ -25,9 +25,14 @@
    the event."
   (push to-or-function (dispatch-forwards from)))
 
+(defun forwardsp (from to-or-function)
+  "Determine if the given from -> to forward is active. Returns either
+   to-or-function or nil."
+  (find to-or-function (dispatch-forwards from)))
+
 (defun clear-forward (from to-or-function)
   "Undo a forward created by forward."
-  (setf (dispatch-forwards from) (remove to-or-function (dispatch-forwards from) :test #'eq)))
+  (setf (dispatch-forwards from) (remove to-or-function (dispatch-forwards from) :test 'eq)))
 
 (defclass event ()
   ((ev :accessor ev :initarg :ev :initform nil

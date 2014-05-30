@@ -14,6 +14,7 @@ anywhere you need a generic event handling system.
 - [\*dispatch\* (object)](#dispatch-object-of-type-dispatch)
 - [make-dispatch (function)](#make-dispatch-function)
 - [forward (function)](#forward-function)
+- [forwardsp (function)](#forwardsp-function)
 - [clear-forward (function)](#clear-forward-function)
 - [event (class)](#event-class)
   - [ev (accessor)](#ev-accessor)
@@ -88,6 +89,13 @@ Example:
       (when (string= (ev event) "click")
         click-events))))
 ```
+
+### forwardsp (function)
+```lisp
+(defun forwardsp (from to-or-function))
+  => to-or-function/nil
+```
+Test if `from` forwards to `to-or-function`
 
 ### clear-forward (function)
 ```lisp

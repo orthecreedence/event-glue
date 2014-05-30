@@ -121,6 +121,16 @@
     (trigger (make-event "click" :data 9) :dispatch hub)
     (is (= clicks 3))))
 
+(test forward-test
+  "Test forwardsp"
+  (let ((a (make-dispatch))
+        (b (make-dispatch)))
+    (is (eq nil (forwardsp a b)))
+    (forward a b)
+    (is (eq b (forwardsp a b)))
+    (clear-forward a b)
+    (is (eq nil (forwardsp a b)))))
+
 (test clear-forward
   "Tests that a forward can be cleared."
   (let ((dispatch (make-dispatch))
