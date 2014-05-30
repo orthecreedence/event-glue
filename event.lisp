@@ -44,6 +44,13 @@
   (:documentation
     "Describes an event and any data it holds."))
 
+(defmethod print-object ((event event) s)
+  (print-unreadable-object (event s :type t :identity t)
+    (format s "~_data: ~a " (data event))
+    (format s "~_meta: ~s" (if (hash-table-p (meta event))
+                               (hash-table-count (meta event))
+                               0))))
+
 (defun make-event (name &key data meta (type 'event))
   "Easy wrapper for creating a standard event object. Meta is a plist of
    optional data to set (top-level) into the event object."
