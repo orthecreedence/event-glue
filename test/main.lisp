@@ -63,11 +63,11 @@
   "Test our lovely bind-once function."
   (let ((dispatch (make-dispatch))
         (clicks 0))
-    (bind-once "click" (lambda (ev) (incf clicks (data ev))))
-    (trigger (make-event "click" :data 3))
-    (trigger (make-event "click" :data 3))
-    (trigger (make-event "click" :data 3))
-    (trigger (make-event "click" :data 3))
+    (bind-once "click" (lambda (ev) (incf clicks (data ev))) :dispatch dispatch)
+    (trigger (make-event "click" :data 3) :dispatch dispatch)
+    (trigger (make-event "click" :data 3) :dispatch dispatch)
+    (trigger (make-event "click" :data 3) :dispatch dispatch)
+    (trigger (make-event "click" :data 3) :dispatch dispatch)
     (is (= 3 clicks))))
 
 (test trigger

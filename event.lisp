@@ -76,7 +76,7 @@
     ;; use setf here so we can access wrapped-function from within itself.
     (setf wrapped-function 
           (lambda (event)
-            (unbind event-name wrapped-function :dispatch *dispatch*)
+            (unbind event-name wrapped-function :dispatch dispatch)
             (funcall function event)))
     ;; now just clal bind as normal
     (bind event-name wrapped-function :name name :dispatch dispatch)))
