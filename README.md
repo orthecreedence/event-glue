@@ -10,6 +10,22 @@ anywhere you need a generic event handling system.
 
 ## API/docs
 
+- [dispatch (class)](#dispatch-class)
+- [make-dispatch (function)](#make-dispatch-function)
+- [forward (function)](#forward-function)
+- [clear-forward (function)](#clear-forward-function)
+- [event (class)](#event-class)
+  - [ev](#ev-accessor)
+  - [data](#data-accessor)
+  - [meta](#meta-accessor)
+- [make-event (function)](#make-event-function)
+- [bind (function)](#bind-function)
+- [bind-once (function)](#bind-once-function)
+- [unbind (function)](#unbind-function)
+- [unbind-all (function)](#unbind-all-function)
+- [wipe (function)](#wipe-function)
+- [trigger (function)](#trigger-function)
+
 ### dispatch (class)
 `dispatch` is an opaque class. It is an object that matches events to event
 bindings. All event bindings live in a dispatcher, and all events that are
