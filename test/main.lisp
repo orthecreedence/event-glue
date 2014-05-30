@@ -128,10 +128,10 @@
     (is (eq nil (forwardsp a b)))
     (forward a b)
     (is (eq b (forwardsp a b)))
-    (clear-forward a b)
+    (unforward a b)
     (is (eq nil (forwardsp a b)))))
 
-(test clear-forward
+(test unforward
   "Tests that a forward can be cleared."
   (let ((dispatch (make-dispatch))
         (hub (make-dispatch))
@@ -139,7 +139,7 @@
     (bind "click" (lambda (x) (incf clicks) x) :dispatch dispatch)
     (forward hub dispatch)
     (trigger (make-event "click") :dispatch hub)
-    (clear-forward hub dispatch)
+    (unforward hub dispatch)
     (trigger (make-event "click") :dispatch hub)
     (is (= 1 clicks))))
 

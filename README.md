@@ -15,7 +15,7 @@ anywhere you need a generic event handling system.
 - [make-dispatch (function)](#make-dispatch-function)
 - [forward (function)](#forward-function)
 - [forwardsp (function)](#forwardsp-function)
-- [clear-forward (function)](#clear-forward-function)
+- [unforward (function)](#unforward-function)
 - [event (class)](#event-class)
   - [ev (accessor)](#ev-accessor)
   - [data (accessor)](#data-accessor)
@@ -97,9 +97,9 @@ Example:
 ```
 Test if `from` forwards to `to-or-function`
 
-### clear-forward (function)
+### unforward (function)
 ```lisp
-(defun clear-forward (from to-or-function))
+(defun unforward (from to-or-function))
   => nil
 ```
 Undoes a forward created by [forward](#forward-function). The `to-or-function`
@@ -111,7 +111,7 @@ Example:
 (let ((main (make-dispatch))
       (hub (make-dispatch)))
   (forward hub main)
-  (clear-forward hub main))
+  (unforward hub main))
 ```
 
 ### event (class)

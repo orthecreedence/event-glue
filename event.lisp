@@ -30,7 +30,7 @@
    to-or-function or nil."
   (find to-or-function (dispatch-forwards from)))
 
-(defun clear-forward (from to-or-function)
+(defun unforward (from to-or-function)
   "Undo a forward created by forward."
   (setf (dispatch-forwards from) (remove to-or-function (dispatch-forwards from) :test 'eq)))
 

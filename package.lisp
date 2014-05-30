@@ -5,7 +5,7 @@
            #:make-dispatch
            #:forward
            #:forwardsp
-           #:clear-forward
+           #:unforward
            #:event
            #:ev
            #:data
