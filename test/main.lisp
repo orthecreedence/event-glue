@@ -1,8 +1,6 @@
 (defpackage :event-glue-test
   (:use :cl :fiveam :event-glue)
   (:import-from #:event-glue
-                #:dispatch
-                #:event
                 #:dispatch-handlers
                 #:dispatch-handler-names
                 #:make-lookup-name)
