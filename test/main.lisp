@@ -116,6 +116,15 @@
     (is (= x 9))
     (is (string= y "JETSON, YOU'RE FIRED."))))
 
+(test trigger-ordering
+  "Tests that bindings fire in the order the were added."
+  (let ((dispatch (make-dispatch))
+        (num 6))
+    (bind "click" (lambda (ev) (setf num (expt num 2)) ev) :dispatch dispatch)
+    (bind "click" (lambda (ev) (setf num (/ num 2)) ev) :dispatch dispatch)
+    (trigger (event "click") :dispatch dispatch)
+    (is (= 18 num))))
+
 (test forwarding-simple
   "Tests simple dispatcher forwarding"
   (let* ((dispatch (make-dispatch))

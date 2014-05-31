@@ -75,7 +75,9 @@
   (let* ((handlers (dispatch-handlers dispatch))
          (event-handlers (gethash event-name handlers)))
     (unless (find function event-handlers :test 'eq)
-      (push function event-handlers)
+      ;; append instead of push here. this means when the event fires, the
+      ;; bindings fire in the order added.
+      (setf event-handlers (append event-handlers (list function)))
       (setf (gethash event-name handlers) event-handlers))
     (when name
       (setf (gethash (make-lookup-name event-name name) (dispatch-handler-names dispatch)) function))

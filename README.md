@@ -182,6 +182,9 @@ reference to the function around if you need to unbind (which you'd normally
 have to do, see [unbind](#unbind-function)). Instead, you can name a binding
 and then unbind that function with the same name later.
 
+Note that if multiple bindings are attached to the same event, the bindings are
+fired *in the order they were added*.
+
 Returns the passed function and also a second function of 0 args that, when
 called, [unbinds](#unbind-function) the event.
 
