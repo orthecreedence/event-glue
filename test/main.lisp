@@ -16,7 +16,7 @@
 
 (test make-event
   "Tests making an event object"
-  (let ((event (make-event "click" :data "mystr" :meta '(:name "slappy" :age 27))))
+  (let ((event (event "click" :data "mystr" :meta '(:name "slappy" :age 27))))
     (is (typep event 'event))
     (is (string= (data event) "mystr"))
     (is (and (string= (gethash "name" (meta event)) "slappy")
@@ -62,10 +62,10 @@
   (let ((dispatch (make-dispatch))
         (clicks 0))
     (bind-once "click" (lambda (ev) (incf clicks (data ev))) :dispatch dispatch)
-    (trigger (make-event "click" :data 3) :dispatch dispatch)
-    (trigger (make-event "click" :data 3) :dispatch dispatch)
-    (trigger (make-event "click" :data 3) :dispatch dispatch)
-    (trigger (make-event "click" :data 3) :dispatch dispatch)
+    (trigger (event "click" :data 3) :dispatch dispatch)
+    (trigger (event "click" :data 3) :dispatch dispatch)
+    (trigger (event "click" :data 3) :dispatch dispatch)
+    (trigger (event "click" :data 3) :dispatch dispatch)
     (is (= 3 clicks))))
 
 (test unbind-function
@@ -75,9 +75,9 @@
     (multiple-value-bind (_ unbind-fn)
         (bind "click" (lambda (ev) (incf clicks (data ev))) :dispatch dispatch)
       (declare (ignore _))
-      (trigger (make-event "click" :data 1) :dispatch dispatch)
+      (trigger (event "click" :data 1) :dispatch dispatch)
       (funcall unbind-fn)
-      (trigger (make-event "click" :data 1) :dispatch dispatch)
+      (trigger (event "click" :data 1) :dispatch dispatch)
       (is (= 1 clicks)))))
 
 (test unbind-once-function
@@ -88,7 +88,7 @@
         (bind "click" (lambda (ev) (incf clicks (data ev))) :dispatch dispatch)
       (declare (ignore _))
       (funcall unbind-fn)
-      (trigger (make-event "click" :data 1) :dispatch dispatch)
+      (trigger (event "click" :data 1) :dispatch dispatch)
       (is (= 0 clicks)))))
 
 (test trigger
@@ -106,12 +106,12 @@
     (bind "fire" (lambda (e)
                     (incf c)
                    (setf y (concatenate 'string y (data e)))) :dispatch dispatch)
-    (trigger (make-event "click" :data 3) :dispatch dispatch)
-    (trigger (make-event "fire" :data "JETSON, YOU'RE FIRED.") :dispatch dispatch)
+    (trigger (event "click" :data 3) :dispatch dispatch)
+    (trigger (event "fire" :data "JETSON, YOU'RE FIRED.") :dispatch dispatch)
     (unbind-all "click" :dispatch dispatch)
     (unbind-all "fire" :dispatch dispatch)
-    (trigger (make-event "click" :data 3) :dispatch dispatch)
-    (trigger (make-event "fire" :data "IGNORE ME!!") :dispatch dispatch)
+    (trigger (event "click" :data 3) :dispatch dispatch)
+    (trigger (event "fire" :data "IGNORE ME!!") :dispatch dispatch)
     (is (= c 3))
     (is (= x 9))
     (is (string= y "JETSON, YOU'RE FIRED."))))
@@ -122,9 +122,9 @@
          (hub (make-dispatch))
          (clicks 0))
     (bind "click" (lambda (x) (incf clicks) x) :dispatch dispatch)
-    (trigger (make-event "click") :dispatch hub)
+    (trigger (event "click") :dispatch hub)
     (forward hub dispatch)
-    (trigger (make-event "click") :dispatch hub)
+    (trigger (event "click") :dispatch hub)
     (is (= clicks 1))))
 
 (test forwarding-filter
@@ -136,12 +136,12 @@
                    (when (< (data ev) 4)
                      dispatch)))
     (bind "click" (lambda (ev) (incf clicks) ev) :dispatch dispatch)
-    (trigger (make-event "click" :data 2) :dispatch hub)
-    (trigger (make-event "click" :data 1) :dispatch hub)
-    (trigger (make-event "click" :data 0) :dispatch hub)
-    (trigger (make-event "click" :data 6) :dispatch hub)
-    (trigger (make-event "click" :data 4) :dispatch hub)
-    (trigger (make-event "click" :data 9) :dispatch hub)
+    (trigger (event "click" :data 2) :dispatch hub)
+    (trigger (event "click" :data 1) :dispatch hub)
+    (trigger (event "click" :data 0) :dispatch hub)
+    (trigger (event "click" :data 6) :dispatch hub)
+    (trigger (event "click" :data 4) :dispatch hub)
+    (trigger (event "click" :data 9) :dispatch hub)
     (is (= clicks 3))))
 
 (test forward-test
@@ -161,9 +161,9 @@
         (clicks 0))
     (bind "click" (lambda (x) (incf clicks) x) :dispatch dispatch)
     (forward hub dispatch)
-    (trigger (make-event "click") :dispatch hub)
+    (trigger (event "click") :dispatch hub)
     (unforward hub dispatch)
-    (trigger (make-event "click") :dispatch hub)
+    (trigger (event "click") :dispatch hub)
     (is (= 1 clicks))))
 
 (defun run-tests ()

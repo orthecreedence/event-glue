@@ -20,7 +20,7 @@ anywhere you need a generic event handling system.
   - [ev (accessor)](#ev-accessor)
   - [data (accessor)](#data-accessor)
   - [meta (accessor)](#meta-accessor)
-- [make-event (function)](#make-event-function)
+- [event (function)](#event-function)
 - [bind (function)](#bind-function)
 - [bind-once (function)](#bind-once-function)
 - [unbind (function)](#unbind-function)
@@ -120,7 +120,7 @@ the event's data (which is an arbitrary object), and any metadata associated
 with the event. The class is public, allowing you to extend it and add any extra
 fields required to it (such as a UUID field).
 
-Events are created using the [make-event function](#make-event-function), and
+Events are created using the [event function](#event-function), and
 are generally passed to [trigger](#trigger-function) (or they could be
 serialized and sent off somewhere).
 
@@ -139,9 +139,9 @@ necesarily fit into the event's data. For instance, you may want to mark what
 source an event came from in you app, but that information doesn't pertain to
 the event's data payload.
 
-### make-event (function)
+### event (function)
 ```lisp
-(defun make-event (name &key data meta (type 'event)))
+(defun event (name &key data meta (type 'event)))
   => event
 ```
 
@@ -151,17 +151,17 @@ well. `data` can be any object you want to attach to the event. `meta` can
 be either a hash table or a plist (if plist, key names are `string-downcase`ed)
 that gives extra information about the event.
 
-`make-event` also takes a `:type` keyword (which defaults to [event](#event-class))
+`event` also takes a `:type` keyword (which defaults to [event](#event-class))
 that allows you to create an event of your own type (for instance, you may
-extend `event` and use `make-event` to create instances of your object).
+extend `event` and use `event` to create instances of your object).
 
 Example:
 ```lisp
-(make-event "click" :data '(:button-id 10) :meta '(:mouse-click t))
+(event "click" :data '(:button-id 10) :meta '(:mouse-click t))
 
 ;; extension example
 (defclass my-event (event) ())
-(make-event "burnourourcorruptcapitalistsystemdowntotheground" :type 'my-event)
+(event "burnourourcorruptcapitalistsystemdowntotheground" :type 'my-event)
 ```
 
 ### bind (function)
@@ -214,8 +214,8 @@ called, [unbinds](#unbind-function) the event.
 Example:
 ```lisp
 (bind-once "call" (lambda (ev) (format t "call from ~a~%" (data ev))))
-(trigger (make-event "call") :data "sally")  ; hi, sally
-(trigger (make-event "call") :data "frank")  ; frank's call is ignored
+(trigger (event "call") :data "sally")  ; hi, sally
+(trigger (event "call") :data "frank")  ; frank's call is ignored
 ```
 
 ### unbind (function)
@@ -278,7 +278,7 @@ Examples:
 ```lisp
 (bind "click" (lambda (event) (format t "clicked: ~a~%" (data event))))
 (bind "click" (lambda (event) (format t "click!~%")))
-(trigger (make-event "click" :data 'red-button))
+(trigger (event "click" :data 'red-button))
 ```
 
 ## Tests

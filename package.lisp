@@ -6,11 +6,11 @@
            #:forward
            #:forwardsp
            #:unforward
-           #:event
+           #:event    ; event (class)
            #:ev
            #:data
            #:meta
-           #:make-event
+           #:event    ; event (function)
            #:bind
            #:bind-once
            #:unbind

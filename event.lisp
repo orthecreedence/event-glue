@@ -51,7 +51,7 @@
                                (hash-table-count (meta event))
                                0))))
 
-(defun make-event (name &key data meta (type 'event))
+(defun event (name &key data meta (type 'event))
   "Easy wrapper for creating a standard event object. Meta is a plist of
    optional data to set (top-level) into the event object."
   (let ((event (make-instance type :ev name :data data)))
