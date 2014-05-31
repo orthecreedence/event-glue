@@ -153,17 +153,21 @@ that gives extra information about the event.
 
 `make-event` also takes a `:type` keyword (which defaults to [event](#event-class))
 that allows you to create an event of your own type (for instance, you may
-extend `event` and use `make-event` to create instances of it).
+extend `event` and use `make-event` to create instances of your object).
 
 Example:
 ```lisp
 (make-event "click" :data '(:button-id 10) :meta '(:mouse-click t))
+
+;; extension example
+(defclass my-event (event) ())
+(make-event "burnourourcorruptcapitalistsystemdowntotheground" :type 'my-event)
 ```
 
 ### bind (function)
 ```lisp
 (defun bind (event-name function &key name (dispatch *dispatch*)))
-  => function
+  => function, unbind-function
 ```
 Bind `function` to the given `event-name` on the `dispatch` object. This means
 that whenever [trigger](#trigger-function) is called on `dispatch` with that
@@ -178,7 +182,8 @@ reference to the function around if you need to unbind (which you'd normally
 have to do, see [unbind](#unbind-function)). Instead, you can name a binding
 and then unbind that function with the same name later.
 
-Returns the passed function.
+Returns the passed function and also a second function of 0 args that, when
+called, [unbinds](#unbind-function) the event.
 
 Examples:
 ```lisp
@@ -198,16 +203,19 @@ Examples:
 ### bind-once (function)
 ```lisp
 (defun bind-once (event-name function &key name (dispatch *dispatch*)))
-  => function
+  => function, unbind-function
 ```
 Almost exactly like [bind](#bind-function), except that the binding only lasts
 for one triggering (or until it's removed).
 
+Returns the passed function and also a second function of 0 args that, when
+called, [unbinds](#unbind-function) the event.
+
 Example:
 ```lisp
 (bind-once "call" (lambda (ev) (format t "call from ~a~%" (data ev))))
-(trigger (make-event "call"))  ; this will fire the binding
-(trigger (make-event "call"))  ; this will not fire the binding
+(trigger (make-event "call") :data "sally")  ; hi, sally
+(trigger (make-event "call") :data "frank")  ; frank's call is ignored
 ```
 
 ### unbind (function)

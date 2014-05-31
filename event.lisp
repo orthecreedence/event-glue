@@ -79,7 +79,10 @@
       (setf (gethash event-name handlers) event-handlers))
     (when name
       (setf (gethash (make-lookup-name event-name name) (dispatch-handler-names dispatch)) function))
-    function))
+    ;; return the original function AND a function that unbinds the event if
+    ;; called
+    (values function
+            (lambda () (unbind event-name function :dispatch dispatch)))))
 
 (defun bind-once (event-name function &key name (dispatch *dispatch*))
   "Bind a function to an event, but clear the binding out once the event has

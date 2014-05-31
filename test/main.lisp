@@ -68,6 +68,29 @@
     (trigger (make-event "click" :data 3) :dispatch dispatch)
     (is (= 3 clicks))))
 
+(test unbind-function
+  "Test that we can unbind via our second return from bind."
+  (let ((dispatch (make-dispatch))
+        (clicks 0))
+    (multiple-value-bind (_ unbind-fn)
+        (bind "click" (lambda (ev) (incf clicks (data ev))) :dispatch dispatch)
+      (declare (ignore _))
+      (trigger (make-event "click" :data 1) :dispatch dispatch)
+      (funcall unbind-fn)
+      (trigger (make-event "click" :data 1) :dispatch dispatch)
+      (is (= 1 clicks)))))
+
+(test unbind-once-function
+  "Test that we can unbind via our second return from bind-once."
+  (let ((dispatch (make-dispatch))
+        (clicks 0))
+    (multiple-value-bind (_ unbind-fn)
+        (bind "click" (lambda (ev) (incf clicks (data ev))) :dispatch dispatch)
+      (declare (ignore _))
+      (funcall unbind-fn)
+      (trigger (make-event "click" :data 1) :dispatch dispatch)
+      (is (= 0 clicks)))))
+
 (test trigger
   "Tests triggering of events (and lack thereof after unbinding)"
   (let* ((dispatch (make-dispatch))
