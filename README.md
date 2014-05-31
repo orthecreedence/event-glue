@@ -198,6 +198,9 @@ Examples:
 ;; bind the click-handler function to the "click" event on the global dispatch
 (bind "click" 'click-handler)
 
+;; bind to all events
+(bind :* (lambda (ev) (format t "got event: ~a~%" ev)))
+
 ;; create our own dispatch and bind to the "close" event on it.
 (let ((my-dispatch (make-dispatch)))
   (bind "close" (lambda (event) (format t "closed: ~a~%" event)) :dispatch my-dispatch))
