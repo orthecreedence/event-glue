@@ -173,6 +173,9 @@ Bind `function` to the given `event-name` on the `dispatch` object. This means
 that whenever [trigger](#trigger-function) is called on `dispatch` with that
 `event-name`, `function` will be called.
 
+If you pass `:*` as the event name, you can bind a catch-all event, meaning that
+your binding is triggered for *every event* that goes through the dispatcher.
+
 `function` must take one argument, which will be the event object that was
 triggered.
 
@@ -180,7 +183,9 @@ The `:name` keyword allows you to "name" a binding. This is useful when you
 want to bind an event to anonymous function but you don't want to keep a
 reference to the function around if you need to unbind (which you'd normally
 have to do, see [unbind](#unbind-function)). Instead, you can name a binding
-and then unbind that function with the same name later.
+and then unbind that function with the same name later. The name you pass is
+converted to a string, so the names `:test-event` and `"test-event"` will
+ultimately resolve to the same name. Be aware of this when naming events.
 
 Note that if multiple bindings are attached to the same event, the bindings are
 fired *in the order they were added*.

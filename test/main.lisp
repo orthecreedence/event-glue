@@ -68,6 +68,32 @@
     (trigger (event "click" :data 3) :dispatch dispatch)
     (is (= 3 clicks))))
 
+(test binding-catch-all
+  "Tests our catch-all event bindings."
+  (let ((dispatch (make-dispatch))
+        (num 0))
+    (bind "click" (lambda (ev) (incf num) ev) :dispatch dispatch)
+    (bind :* (lambda (ev) (incf num) ev) :dispatch dispatch)
+    (trigger (event "click") :dispatch dispatch)
+    (is (= 2 num))
+    (trigger (event "samson") :dispatch dispatch)
+    (trigger (event "howser") :dispatch dispatch)
+    (trigger (event "samson") :dispatch dispatch)
+    (trigger (event "howser") :dispatch dispatch)
+    (is (= 6 num))))
+
+(test binding-catch-all-unbind-function
+  "Test our catch-all bindings' unbind-function actually works."
+  (let ((dispatch (make-dispatch))
+        (num 0))
+    (multiple-value-bind (_ unbind-fn)
+        (bind :* (lambda (ev) (incf num) ev) :dispatch dispatch)
+      (declare (ignore _))
+      (trigger (event "imteamleader") :dispatch dispatch)
+      (funcall unbind-fn)
+      (trigger (event "ifanythingtheyshouldberewarded") :dispatch dispatch)
+      (is (= 1 num)))))
+
 (test unbind-function
   "Test that we can unbind via our second return from bind."
   (let ((dispatch (make-dispatch))
@@ -104,7 +130,7 @@
                     (incf c)
                     (incf x (* 2 (data e)))) :dispatch dispatch)
     (bind "fire" (lambda (e)
-                    (incf c)
+                   (incf c)
                    (setf y (concatenate 'string y (data e)))) :dispatch dispatch)
     (trigger (event "click" :data 3) :dispatch dispatch)
     (trigger (event "fire" :data "JETSON, YOU'RE FIRED.") :dispatch dispatch)

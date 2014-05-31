@@ -131,6 +131,11 @@
   "Trigger en event."
   (let* ((event-name (ev event))
          (handlers (gethash event-name (dispatch-handlers dispatch)))
+         ;; grab catch-all bindings (fired for every event)
+         (catch-all (gethash :* (dispatch-handlers dispatch)))
+         (handlers (if catch-all
+                       (append handlers catch-all)
+                       handlers))
          (forwards (dispatch-forwards dispatch)))
     (dolist (fn handlers)
       (funcall fn event))
