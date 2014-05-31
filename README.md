@@ -232,12 +232,14 @@ Example:
 ### unbind (function)
 ```lisp
 (defun unbind (event-name function-or-name &key (dispatch *dispatch*)))
-  => nil
+  => t/nil
 ```
 Unbind `function-or-name` from the `event-name` on the `dispatch` object. This
 is essentially the opposite of [bind](#bind-function), allowing us to no longer
 have the given function (or binding name) triggered when the given `event-name`
 is triggered.
+
+Returns T if a binding was removed, nil if no changes were made.
 
 Example:
 ```lisp

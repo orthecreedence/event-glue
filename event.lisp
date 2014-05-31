@@ -95,7 +95,7 @@
           (lambda (event)
             (unbind event-name wrapped-function :dispatch dispatch)
             (funcall function event)))
-    ;; now just clal bind as normal
+    ;; now just call bind as normal
     (bind event-name wrapped-function :name name :dispatch dispatch)))
 
 (defun unbind (event-name function-or-name &key (dispatch *dispatch*))
