@@ -143,7 +143,7 @@
       (dolist (forward-to forwards)
         (cond ((typep forward-to 'dispatch)
                (trigger event :dispatch forward-to))
-              ((typep forward-to 'function)
+              ((typep forward-to '(or symbol function))
                (let ((conditional-dispatch (funcall forward-to event)))
                  (when conditional-dispatch
                    (trigger event :dispatch conditional-dispatch)))))))))
