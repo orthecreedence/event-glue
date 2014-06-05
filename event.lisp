@@ -140,7 +140,7 @@
     (dolist (fn handlers)
       (funcall fn event))
     (when forwards
-      (dolist (forward-to forwards)
+      (dolist (forward-to (reverse forwards))
         (cond ((typep forward-to 'dispatch)
                (trigger event :dispatch forward-to))
               ((typep forward-to '(or symbol function))
