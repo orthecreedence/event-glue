@@ -72,6 +72,10 @@
 (defun bind (event-name function &key name (dispatch *dispatch*))
   "Bind a function to an event. Optionally allows naming the binding so it can
    be removed later on without the reference to the bound function."
+  ;; if we're doing a named bind, remove any existing binding of the same
+  ;; event/name pair.
+  (when name
+    (unbind event-name name :dispatch dispatch))
   (let* ((handlers (dispatch-handlers dispatch))
          (event-handlers (gethash event-name handlers)))
     (unless (find function event-handlers :test 'eq)
@@ -112,7 +116,7 @@
       (unless (functionp function-or-name)
         (remhash (make-lookup-name event-name function-or-name) (dispatch-handler-names dispatch)))
       (let ((size (length (gethash event-name handlers)))
-            (removed (remove function (gethash event-name handlers))))
+            (removed (remove function (gethash event-name handlers) :test 'eq)))
         (setf (gethash event-name handlers) removed)
         (< (length (gethash event-name handlers)) size)))))
 

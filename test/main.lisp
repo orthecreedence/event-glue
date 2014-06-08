@@ -43,7 +43,14 @@
     (is (eq fn (gethash named (dispatch-handler-names dispatch))))
     (unbind "open" name :dispatch dispatch)
     (is (= (length (gethash "open" (dispatch-handlers dispatch))) 0))
-    (is (eq nil (gethash named (dispatch-handler-names dispatch))))))
+    (is (eq nil (gethash named (dispatch-handler-names dispatch))))
+    ;; make sure a named binding is REPLACED if given the same name/event
+    (bind "fun" fn :name "test" :dispatch dispatch)
+    (bind "fun" fn :name "test" :dispatch dispatch)
+    (is (= 1 (length (gethash "fun" (dispatch-handlers dispatch)))))
+    (bind "har" (lambda () nil) :name "test" :dispatch dispatch)
+    (bind "har" (lambda () nil) :name "test" :dispatch dispatch)
+    (is (= 1 (length (gethash "har" (dispatch-handlers dispatch)))))))
 
 (test binding-multiple
   "Tests to make sure multiple handlers can be bound/unbound to one event"
