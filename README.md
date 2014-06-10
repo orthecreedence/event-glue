@@ -8,7 +8,54 @@ It is used in [turtl-core](https://github.com/turtl/core) to provide the main
 fabric of communication between various pieces of the app. It can be used
 anywhere you need a generic event handling system.
 
-## API/docs
+## Why?
+Eventing can be a great way to organize code.
+
+Let's say you have an app. This app has a view (HTML, GTK, whatever). That view
+has a button. When the button is clicked, you have to run three different
+functions: `launch-nuke`, `notify-president`, `lock-fallout-shelter`. Now let's
+say you need to add another view to your app. This view also has a button, that
+when pressed, needs to do some things specific to that particular view, as well
+as run your three functions from earlier.
+
+You can do a few things:
+
+1. Duplicate the calls to the `launch-nuke`, `notify-president`, and `lock-fallout-shelter`.
+After all, it's only three functions, right? Well if you need to add another
+function to call later, you have to remember to update all the places that call
+your function set.
+1. Abstract the functions calls inside of another function. This is a fine
+solution, but can end up giving you weird trees of functions that do similar
+things.
+1. Use eventing. Instead of calling your functions directly, you create and
+trigger a new event "red-button-pressed." Then you set up bindings to that event
+which tie the firing of the event to the specific actions that need to be called
+when it's fired. This offers strong decoupling of your interfaces. Instead of
+the button needing to know what to run, it just fires an event and each
+function is responsible for acting on it.
+
+```lisp
+(defun launch-nuke (ev) ...)
+(defun notify-president (ev) ...)
+(defun lock-fallout-shelter (ev) ...)
+
+(bind "red-button-pressed" 'launch-nuke)
+(bind "red-button-pressed" 'notify-president)
+(bind "red-button-pressed" 'lock-fallout-shelter)
+
+(defun red-button-pressed ()
+  (trigger (event "red-button-pressed")))
+```
+
+The next time we add a red button to another interface, all we have to do is run
+the same trigger: `(trigger (event "red-button-pressed"))` and our functions
+will fire automatically.
+
+You can use eventing as much or as little as you want...your entire application
+can be based on cascading triggering of events or you can just use it for simple
+one-off cases. Either way, it can be a useful tool for just about any project.
+
+## API
 
 - [dispatch (class)](#dispatch-class)
 - [\*dispatch\* (object)](#dispatch-object-of-type-dispatch)
@@ -161,7 +208,7 @@ Example:
 
 ;; extension example
 (defclass my-event (event) ())
-(event "burnourourcorruptcapitalistsystemdowntotheground" :type 'my-event)
+(event "burnourcorruptcapitalistsystemdowntotheground" :type 'my-event)
 ```
 
 ### bind (function)
