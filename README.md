@@ -234,6 +234,9 @@ and then unbind that function with the same name later. The name you pass is
 converted to a string, so the names `:test-event` and `"test-event"` will
 ultimately resolve to the same name. Be aware of this when naming events.
 
+Note that specifying an `event-name`/`:name` pair that already exists will
+*overwrite* the existing event binding.
+
 Note that if multiple bindings are attached to the same event, the bindings are
 fired *in the order they were added*.
 
