@@ -14,9 +14,9 @@
   "Our global dispatch handler. This is the default handler used if a dispatcher
    is not specified in event operations.")
 
-(defun make-dispatch ()
+(defun make-dispatch (&optional (type 'dispatch))
   "Make a dispatcher."
-  (make-instance 'dispatch))
+  (make-instance type))
 
 (defun forward (from to-or-function)
   "Forward events from one dispatcher to another. If the second dispatcher is
@@ -69,13 +69,13 @@
                "@"
                (string name)))
 
-(defun bind (event-name function &key name (dispatch *dispatch*))
+(defun bind (event-name function &key name ((:on dispatch) *dispatch*))
   "Bind a function to an event. Optionally allows naming the binding so it can
    be removed later on without the reference to the bound function."
   ;; if we're doing a named bind, remove any existing binding of the same
   ;; event/name pair.
   (when name
-    (unbind event-name name :dispatch dispatch))
+    (unbind event-name name :on dispatch))
   (let* ((handlers (dispatch-handlers dispatch))
          (event-handlers (gethash event-name handlers)))
     (unless (find function event-handlers :test 'eq)
@@ -88,21 +88,21 @@
     ;; return the original function AND a function that unbinds the event if
     ;; called
     (values function
-            (lambda () (unbind event-name function :dispatch dispatch)))))
+            (lambda () (unbind event-name function :on dispatch)))))
 
-(defun bind-once (event-name function &key name (dispatch *dispatch*))
+(defun bind-once (event-name function &key name ((:on dispatch) *dispatch*))
   "Bind a function to an event, but clear the binding out once the event has
    been triggered once."
   (let ((wrapped-function nil))
     ;; use setf here so we can access wrapped-function from within itself.
     (setf wrapped-function 
           (lambda (event)
-            (unbind event-name wrapped-function :dispatch dispatch)
+            (unbind event-name wrapped-function :on dispatch)
             (funcall function event)))
     ;; now just call bind as normal
-    (bind event-name wrapped-function :name name :dispatch dispatch)))
+    (bind event-name wrapped-function :name name :on dispatch)))
 
-(defun unbind (event-name function-or-name &key (dispatch *dispatch*))
+(defun unbind (event-name function-or-name &key ((:on dispatch) *dispatch*))
   "Unbind an event/function pair. If function-or-name contains a non-function
    value, the value is used in a name lookup instead. This allows removing an
    event/function binding by its name (as specified by :name in the bind
@@ -120,18 +120,18 @@
         (setf (gethash event-name handlers) removed)
         (< (length (gethash event-name handlers)) size)))))
 
-(defun unbind-all (event-name &key (dispatch *dispatch*))
+(defun unbind-all (event-name &key ((:on dispatch) *dispatch*))
   "Unbind all handlers for the given event name."
   (setf (gethash event-name (dispatch-handlers dispatch)) nil))
 
-(defun wipe (&key preserve-forwards (dispatch *dispatch*))
+(defun wipe (&key preserve-forwards ((:on dispatch) *dispatch*))
   "Wipe out all handlers for a dispatch object."
   (setf (dispatch-handlers dispatch) (make-hash-table :test #'equal)
         (dispatch-handler-names dispatch) (make-hash-table :test #'equal))
   (unless preserve-forwards
     (setf (dispatch-forwards dispatch) nil)))
 
-(defun trigger (event &key (dispatch *dispatch*))
+(defun trigger (event &key ((:on dispatch) *dispatch*))
   "Trigger en event."
   (let* ((event-name (ev event))
          (handlers (gethash event-name (dispatch-handlers dispatch)))
@@ -146,9 +146,9 @@
     (when forwards
       (dolist (forward-to (reverse forwards))
         (cond ((typep forward-to 'dispatch)
-               (trigger event :dispatch forward-to))
+               (trigger event :on forward-to))
               ((typep forward-to '(or symbol function))
                (let ((conditional-dispatch (funcall forward-to event)))
                  (when conditional-dispatch
-                   (trigger event :dispatch conditional-dispatch)))))))))
+                   (trigger event :on conditional-dispatch)))))))))
 

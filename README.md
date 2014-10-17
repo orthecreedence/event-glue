@@ -55,6 +55,42 @@ You can use eventing as much or as little as you want...your entire application
 can be based on cascading triggering of events or you can just use it for simple
 one-off cases. Either way, it can be a useful tool for just about any project.
 
+## How?
+
+event-glue can be used two ways:
+
+1. Globally triggering events on your whole app
+2. Triggering events on specific objects
+
+Global triggering:
+```lisp
+;; when the database is finished initializing, apply our schema
+(bind "db-init" apply-schema)
+
+;; initialize the db, triggering "db-init" when done
+(defun init-my-db (done-cb)
+  (do-some-async-stuff done-cb))
+(init-my-db (lambda (trigger (event "db-init"))))
+```
+
+Triggering on specific objects:
+```lisp
+;; create our own class that extends `dispatch`
+(defclass user (dispatch)
+  ((name :accessor name :initarg :name :initform "slappy")))
+
+;; create the user and bind to its "login" event
+(defparameter *user* (make-instance 'user))
+(bind "login" (lambda () (format t "user logged in~%")) :on *user*)
+
+;; show our fictional interface, and once they login, trigger our event
+(show-login :login-cb (lambda (username password)
+                        ;; forward the username/password to our bindings via
+                        ;; the event `:data` keyword
+                        (trigger (event "login" :data (list username password))
+                                 :on *user*)))
+```
+
 ## API
 
 - [dispatch (class)](#dispatch-class)
@@ -81,6 +117,9 @@ bindings. All event bindings live in a dispatcher, and all events that are
 triggred are triggered on a dispatcher. It is the backbone of event-glue and all
 events flow through a dispatcher.
 
+It can be easily extended by other classes to give you eventing on those
+objects.
+
 It has no public accessors, but is exported so you can expand it within your app
 to add things like a synchronized queue.
 
@@ -89,7 +128,7 @@ events or using a function to filter them (see [forward](#forward-function)).
 
 ### \*dispatch\* (object of type dispatch)
 This is the global *default* event dispatcher. If you use the [bind](#bind-function)
-or [trigger](#trigger-function) functions without specifying the `:dispatch`
+or [trigger](#trigger-function) functions without specifying the `:on`
 keyword, `*dispatch*` is used.
 
 It is created on load via `defvar` meaning that subsequent loads will preserve
@@ -200,7 +239,7 @@ that gives extra information about the event.
 
 `event` also takes a `:type` keyword (which defaults to [event](#event-class))
 that allows you to create an event of your own type (for instance, you may
-extend `event` and use `event` to create instances of your object).
+extend `event` and use `your-event` to create event instances).
 
 Example:
 ```lisp
@@ -213,7 +252,7 @@ Example:
 
 ### bind (function)
 ```lisp
-(defun bind (event-name function &key name (dispatch *dispatch*)))
+(defun bind (event-name function &key name (on *dispatch*)))
   => function, unbind-function
 ```
 Bind `function` to the given `event-name` on the `dispatch` object. This means
@@ -253,7 +292,7 @@ Examples:
 
 ;; create our own dispatch and bind to the "close" event on it.
 (let ((my-dispatch (make-dispatch)))
-  (bind "close" (lambda (event) (format t "closed: ~a~%" event)) :dispatch my-dispatch))
+  (bind "close" (lambda (event) (format t "closed: ~a~%" event)) :on my-dispatch))
 
 ;; use named events to unbind an anonymous lambda
 (bind "fire" (lambda (ev) (format t "JETSON, ...")) :name "fire:jetson")
@@ -263,7 +302,7 @@ Examples:
 
 ### bind-once (function)
 ```lisp
-(defun bind-once (event-name function &key name (dispatch *dispatch*)))
+(defun bind-once (event-name function &key name (on *dispatch*)))
   => function, unbind-function
 ```
 Almost exactly like [bind](#bind-function), except that the binding only lasts
@@ -281,7 +320,7 @@ Example:
 
 ### unbind (function)
 ```lisp
-(defun unbind (event-name function-or-name &key (dispatch *dispatch*)))
+(defun unbind (event-name function-or-name &key (on *dispatch*)))
   => t/nil
 ```
 Unbind `function-or-name` from the `event-name` on the `dispatch` object. This
@@ -305,7 +344,7 @@ Example:
 
 ### unbind-all (function)
 ```lisp
-(defun unbind-all (event-name &key (dispatch *dispatch*)))
+(defun unbind-all (event-name &key (on *dispatch*)))
   => nil
 ```
 Unbind all events of type `event-name` on the dispatcher.
@@ -321,7 +360,7 @@ Example:
 
 ### wipe (function)
 ```lisp
-(defun wipe (&key preserve-forwards (dispatch *dispatch*)))
+(defun wipe (&key preserve-forwards (on *dispatch*)))
   => nil
 ```
 Wipe out a dispatch object. This includes all handlers of all types.
@@ -332,7 +371,7 @@ relationships to other dispatch objects. Otherwise, forwards are removed as well
 
 ### trigger (function)
 ```lisp
-(defun trigger (event &key (dispatch *dispatch*)))
+(defun trigger (event &key (on *dispatch*)))
   => nil
 ```
 Finally, `trigger` is what we use to actually fire events.
