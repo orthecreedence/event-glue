@@ -81,7 +81,7 @@ Triggering on specific objects:
 
 ;; create the user and bind to its "login" event
 (defparameter *user* (make-instance 'user))
-(bind "login" (lambda () (format t "user logged in~%")) :on *user*)
+(bind "login" (lambda (ev) (format t "user ~a logged in~%" (car (data ev)))) :on *user*)
 
 ;; show our fictional interface, and once they login, trigger our event
 (show-login :login-cb (lambda (username password)
