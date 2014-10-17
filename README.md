@@ -68,9 +68,7 @@ Global triggering:
 (bind "db-init" apply-schema)
 
 ;; initialize the db, triggering "db-init" when done
-(defun init-my-db (done-cb)
-  (do-some-async-stuff done-cb))
-(init-my-db (lambda (trigger (event "db-init"))))
+(init-my-db :when-finished (lambda () (trigger (event "db-init"))))
 ```
 
 Triggering on specific objects:
