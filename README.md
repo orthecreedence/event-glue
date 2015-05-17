@@ -312,8 +312,8 @@ called, [unbinds](#unbind-function) the event.
 Example:
 ```lisp
 (bind-once "call" (lambda (ev) (format t "call from ~a~%" (data ev))))
-(trigger (event "call") :data "sally")  ; hi, sally
-(trigger (event "call") :data "frank")  ; frank's call is ignored
+(trigger (event "call" :data "sally"))  ; hi, sally
+(trigger (event "call" :data "frank"))  ; frank's call is ignored
 ```
 
 ### unbind (function)
